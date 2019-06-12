@@ -36,10 +36,9 @@ public class FyqzServerZuulApplication {
 		@Override
 		public List<SwaggerResource> get() {
 			List resources = new ArrayList<>();
-			resources.add(swaggerResource("service-chess", "/fyqz-service-chess/v2/api-docs", "2.0"));
-			resources.add(swaggerResource("service-user", "/fyqz-service-user/v2/api-docs", "2.0"));
-			resources.add(swaggerResource("service-scenario", "/fyqz-service-scenario/v2/api-docs", "2.0"));
-			resources.add(swaggerResource("service-deduce", "/fyqz-service-deduce/v2/api-docs", "2.0"));
+			resources.add(swaggerResource("service-chess", "/fyqz-server-chess/v2/api-docs", "2.0"));
+			resources.add(swaggerResource("service-user", "/fyqz-server-user/v2/api-docs", "2.0"));
+			resources.add(swaggerResource("service-scenario", "/fyqz-server-scenario/v2/api-docs", "2.0"));
 			return resources;
 		}
 		private SwaggerResource swaggerResource(String name, String location, String version) {
