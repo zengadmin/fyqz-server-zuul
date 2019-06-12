@@ -23,21 +23,24 @@ public class MyZuulFilter extends ZuulFilter {
     public String filterType() {
         return "pre";
     }
+
     @Override
     public int filterOrder() {
         return 0;
     }
+
     @Override
     public boolean shouldFilter() {
         return true;
     }
+
     @Override
     public Object run() {
         RequestContext currentContext = RequestContext.getCurrentContext();
         HttpServletRequest request = currentContext.getRequest();
         String requestURI = request.getRequestURI();
-        if(requestURI.contains("api-docs")){
-         return null;
+        if (requestURI.contains("api-docs")) {
+            return null;
         }
         logger.info("send{} request to {}", request.getMethod(), request.getRequestURI().toCharArray());
         String accessToken = request.getHeader("TOKEN");
