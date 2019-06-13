@@ -12,7 +12,6 @@
 package com.fyqz.fallback;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.netflix.zuul.filters.route.FallbackProvider;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,7 +26,7 @@ import java.nio.charset.Charset;
 
 @Component
 @Slf4j
-public class UacFallbackProvider implements FallbackProvider {
+public class FallbackProvider implements org.springframework.cloud.netflix.zuul.filters.route.FallbackProvider {
 
 	@Override
 	public String getRoute() {
