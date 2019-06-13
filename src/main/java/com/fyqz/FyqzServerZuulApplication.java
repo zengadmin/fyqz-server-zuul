@@ -15,7 +15,6 @@ import springfox.documentation.swagger.web.SwaggerResourcesProvider;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 @EnableSwagger2Doc
@@ -44,7 +43,6 @@ public class FyqzServerZuulApplication {
         @Override
         public List<SwaggerResource> get() {
             List resources = new ArrayList<>();
-            Map<String, ZuulProperties.ZuulRoute> map = zuulProperties.getRoutes();
             zuulProperties.getRoutes().values().stream().forEach(zuulRoute -> resources.add(
                     swaggerResource(zuulRoute.getServiceId(), zuulRoute.getServiceId(), "2.0")
             ));
