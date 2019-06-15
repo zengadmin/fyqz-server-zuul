@@ -5,6 +5,7 @@ import com.netflix.zuul.context.RequestContext;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,7 +48,7 @@ public class MyZuulFilter extends ZuulFilter {
         if (StringUtils.isBlank(accessToken)) {
             logger.warn("accessToken is empty");
             currentContext.setSendZuulResponse(false);
-            currentContext.setResponseStatusCode(401);
+            currentContext.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
             return null;
         }
         logger.info("accessToken {}", accessToken);
