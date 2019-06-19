@@ -61,3 +61,4 @@ fyqz:
     secret: f4e2e52034348f86b67cde581c0f9eb5[www.fyqz.com]
     # token有效时长，7天，单位秒
     expire: 604800
+  ignorePath: api-docs,userLogin

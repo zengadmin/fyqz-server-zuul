@@ -2,13 +2,16 @@ package com.fyqz.filter;
 
 import com.fyqz.exception.BusinessException;
 import com.fyqz.util.JwtUtils;
+import com.fyqz.util.LogUtil;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import io.jsonwebtoken.Claims;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.netflix.zuul.filters.support.FilterConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -20,9 +23,12 @@ import javax.servlet.http.HttpServletRequest;
  * zuul不仅只是路由，并且还能过滤，做一些安全验证。
  * 可以通过shouldFilter()方法返回值为false，来标明过滤器是否起作用
  */
+@Slf4j
 @Component
 public class MyZuulFilter extends ZuulFilter {
     public static final String USER_KEY = "userId";
+    @Value("${fyqz.ignorePath}")
+    private String ignorePath;
     @Autowired
     private JwtUtils jwtUtils;
 
@@ -48,12 +54,14 @@ public class MyZuulFilter extends ZuulFilter {
         RequestContext currentContext = RequestContext.getCurrentContext();
         HttpServletRequest request = currentContext.getRequest();
         String requestURI = request.getRequestURI();
-        if (requestURI.contains("api-docs")||requestURI.contains("userLogin")) {
+        if (requestURI.contains(ignorePath)) {
+            LogUtil.info(log,"该路径不校验Token,URI={}",requestURI);
             return null;
         }
         String token = request.getHeader("TOKEN");
         //凭证为空
         if(StringUtils.isBlank(token)){
+
             throw new BusinessException( HttpStatus.UNAUTHORIZED.value(),"TOKEN不能为空");
         }
         Claims claims = jwtUtils.getClaimByToken(token);
