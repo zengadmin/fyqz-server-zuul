@@ -1,5 +1,6 @@
 package com.fyqz.filter;
 
+import com.fyqz.config.IgnoreProperties;
 import com.fyqz.exception.BusinessException;
 import com.fyqz.util.JwtUtils;
 import com.fyqz.util.LogUtil;
@@ -11,11 +12,11 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.netflix.zuul.filters.support.FilterConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -27,8 +28,10 @@ import javax.servlet.http.HttpServletRequest;
 @Component
 public class MyZuulFilter extends ZuulFilter {
     public static final String USER_KEY = "userId";
-    @Value("${fyqz.ignorePath}")
-    private String ignorePath;
+
+    @Resource
+    private IgnoreProperties ignoreProperties;
+
     @Autowired
     private JwtUtils jwtUtils;
 
@@ -54,9 +57,11 @@ public class MyZuulFilter extends ZuulFilter {
         RequestContext currentContext = RequestContext.getCurrentContext();
         HttpServletRequest request = currentContext.getRequest();
         String requestURI = request.getRequestURI();
-        if (requestURI.contains(ignorePath)) {
-            LogUtil.info(log,"该路径不校验Token,URI={}",requestURI);
-            return null;
+        for(String str:ignoreProperties.getList()){
+            if (requestURI.contains(str)) {
+                LogUtil.info(log,"该路径不校验Token,URI={}",requestURI);
+                return null;
+            }
         }
         String token = request.getHeader("TOKEN");
         //凭证为空
