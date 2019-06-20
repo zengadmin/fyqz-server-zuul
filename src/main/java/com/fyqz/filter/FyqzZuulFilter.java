@@ -71,19 +71,16 @@ public class FyqzZuulFilter extends ZuulFilter {
             }
         }
         String token = request.getHeader("TOKEN");
-        //凭证为空
+        //TOKEN为空
         if (StringUtils.isBlank(token)) {
-
             throw  new BusinessException(HttpStatus.UNAUTHORIZED.value(),"TOKEN不能为空");
-
         }
+        //用户为空
         Claims claims = jwtUtils.getClaimByToken(token);
         if (claims == null || jwtUtils.isTokenExpired(claims.getExpiration())) {
-
             throw  new BusinessException(HttpStatus.UNAUTHORIZED.value(),"TOKEN失效，请重新登录");
-
         }
-
+        // TOKEN失效
         Result result = userServiceFeign.queryUser(claims.getSubject());
         if (DataUtil.isNotEmpty(result) && DataUtil.isNotEmpty(result.getData())) {
             User user = (User) result.getData();
