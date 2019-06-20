@@ -1,6 +1,7 @@
 package com.fyqz.filter;
 
 import com.fyqz.config.IgnoreProperties;
+import com.fyqz.exception.BusinessException;
 import com.fyqz.model.User;
 import com.fyqz.result.Result;
 import com.fyqz.rpc.UserServiceFeign;
@@ -72,27 +73,22 @@ public class FyqzZuulFilter extends ZuulFilter {
         String token = request.getHeader("TOKEN");
         //凭证为空
         if (StringUtils.isBlank(token)) {
-            currentContext.setSendZuulResponse(false);
-            currentContext.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
-            currentContext.setResponseBody("TOKEN不能为空");
-            return null;
+
+            throw  new BusinessException(HttpStatus.UNAUTHORIZED.value(),"TOKEN不能为空");
+
         }
         Claims claims = jwtUtils.getClaimByToken(token);
         if (claims == null || jwtUtils.isTokenExpired(claims.getExpiration())) {
-            currentContext.setSendZuulResponse(false);
-            currentContext.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
-            currentContext.setResponseBody("TOKEN失效，请重新登录");
-            return null;
+
+            throw  new BusinessException(HttpStatus.UNAUTHORIZED.value(),"TOKEN失效，请重新登录");
+
         }
 
         Result result = userServiceFeign.queryUser(claims.getSubject());
         if (DataUtil.isNotEmpty(result) && DataUtil.isNotEmpty(result.getData())) {
             User user = (User) result.getData();
             if (!user.getToken().equals(token)) {
-                currentContext.setSendZuulResponse(false);
-                currentContext.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
-                currentContext.setResponseBody("TOKEN失效，请重新登录");
-                return null;
+                throw  new BusinessException(HttpStatus.UNAUTHORIZED.value(),"TOKEN失效，请重新登录");
             }
         }
         request.setAttribute(USER_KEY, claims.getSubject());

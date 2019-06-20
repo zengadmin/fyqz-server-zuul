@@ -1,5 +1,6 @@
 package com.fyqz.error;
 
+import com.fyqz.exception.BusinessException;
 import com.fyqz.result.Result;
 import com.fyqz.result.ResultUtil;
 import com.netflix.zuul.context.RequestContext;
@@ -20,7 +21,11 @@ public class ErrorHandlerController implements ErrorController {
     @RequestMapping("/error")
     public Result error() {
         RequestContext requestContext = RequestContext.getCurrentContext();
-        System.out.println("2222");
+        Throwable throwable= requestContext.getThrowable();
+        if(throwable.getCause() instanceof BusinessException){
+            BusinessException exception=(BusinessException)throwable.getCause();
+            return ResultUtil.error(exception.getCode(),exception.getMessage());
+        }
         return ResultUtil.error();
     }
 }
